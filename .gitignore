@@ -1,0 +1,67 @@
+# ========================
+# 🔐 ENV (MAXFIY MA'LUMOT)
+# ========================
+.env
+.env.*
+*.env
+
+# ========================
+# 🧱 BUILD FILES
+# ========================
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Go build papkalar
+bin/
+build/
+dist/
+
+# ========================
+# 🧠 GO CACHE
+# ========================
+go.sum
+*.mod
+vendor/
+
+# (Agar vendor ishlatsang — yuqoridagini o‘chir)
+
+# ========================
+# 📦 IDE / EDITOR
+# ========================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ========================
+# 🗄 DATABASE
+# ========================
+*.db
+*.sqlite
+*.sqlite3
+
+# ========================
+# 🖼 GENERATED FILES
+# ========================
+frontend/generated/
+generated/
+uploads/
+
+# ========================
+# 🌐 NGROK / TEMP
+# ========================
+*.log
+tmp/
+temp/
+
+# ========================
+# 🧪 OS FILES
+# ========================
+.DS_Store
+Thumbs.db

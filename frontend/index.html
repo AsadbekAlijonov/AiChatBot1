@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI Chat</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+    <!-- HISTORY OVERLAY -->
+    <div class="history-overlay" id="history-overlay"></div>
+
+    <!-- HISTORY SIDEBAR -->
+    <aside class="history-sidebar" id="history-sidebar">
+        <div class="sidebar-header">
+            <h3>💬 Suhbatlar tarixi</h3>
+            <button class="close-sidebar-btn" id="close-sidebar-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <button class="new-chat-btn" id="new-chat-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Yangi suhbat
+        </button>
+        <div class="sessions-list" id="sessions-list">
+            <div class="no-sessions">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:40px;height:40px;display:block;margin:0 auto 12px;opacity:0.4"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                Hozircha suhbat yo'q.
+            </div>
+        </div>
+    </aside>
+
+    <!-- HEADER -->
+    <header class="chat-header">
+        <div class="header-left">
+            <button class="history-btn" id="history-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="18" y2="18"/></svg>
+                <span class="history-badge" id="history-badge"></span>
+            </button>
+            <div class="avatar">🤖</div>
+            <div class="details">
+                <h2>AI Assistant</h2>
+                <div class="status">
+                    <span class="status-dot"></span>
+                    <span id="current-chat-title">Yangi suhbat</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- TAB BAR -->
+    <div class="tab-bar">
+        <button class="tab-btn active" id="tab-chat" onclick="switchTab('chat')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Chat
+        </button>
+        <button class="tab-btn" id="tab-image" onclick="switchTab('image')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            Rasm
+        </button>
+        <button class="tab-btn" id="tab-vision" onclick="switchTab('vision')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Vision
+        </button>
+    </div>
+
+    <!-- ===== CHAT TAB ===== -->
+    <main class="tab-content active" id="content-chat">
+        <div class="chat-container" id="chat-container">
+            <div class="welcome-message" id="welcome-msg">
+                <span class="emoji">✨</span>
+                <h3>Salom, <span id="tg-user-name">Do'stim</span>!</h3>
+                <p>Groq AI yordamida ishlaydi. Savolingizni yozing!</p>
+            </div>
+        </div>
+        <footer class="chat-input-area">
+            <div class="input-wrapper">
+                <textarea id="message-input" placeholder="Xabaringizni yozing..." rows="1"></textarea>
+                <button id="send-btn">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                </button>
+            </div>
+        </footer>
+    </main>
+
+    <!-- ===== IMAGE GEN TAB ===== -->
+    <main class="tab-content" id="content-image">
+        <div class="image-gen-container">
+            <div class="image-gen-header">
+                <div class="image-gen-icon">🎨</div>
+                <h2>Rasm Generatsiya</h2>
+                <p>Matn yozing — AI rasm yaratadi</p>
+            </div>
+
+            <div class="prompt-area">
+                <textarea id="image-prompt" placeholder="Masalan: a futuristic city at night, purple neon lights, cyberpunk style, ultra detailed..." rows="3"></textarea>
+                <div class="prompt-actions">
+                    <div class="style-chips">
+                        <button class="chip" onclick="addStyle('realistic photo')">📷 Realistic</button>
+                        <button class="chip" onclick="addStyle('anime style')">🌸 Anime</button>
+                        <button class="chip" onclick="addStyle('oil painting')">🖼 Oil paint</button>
+                        <button class="chip" onclick="addStyle('cyberpunk')">⚡ Cyberpunk</button>
+                        <button class="chip" onclick="addStyle('watercolor')">💧 Watercolor</button>
+                    </div>
+                    <div class="gen-controls">
+                        <label class="send-tg-label">
+                            <input type="checkbox" id="send-to-tg" checked>
+                            <span>Telegram ga ham yuborsin</span>
+                        </label>
+                        <button id="generate-btn" onclick="generateImage()">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                            Yaratish
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Natija -->
+            <div class="image-result" id="image-result" style="display:none">
+                <div class="result-image-wrap">
+                    <img id="result-img" src="" alt="Generatsiya qilingan rasm">
+                    <div class="image-actions">
+                        <button onclick="downloadImage()" class="img-action-btn">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Yuklab olish
+                        </button>
+                        <button onclick="sendResultToTelegram()" class="img-action-btn tg-btn">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8l-1.7 8.02c-.12.56-.47.7-.94.43l-2.6-1.92-1.25 1.21c-.14.14-.26.26-.53.26l.19-2.66 4.84-4.37c.21-.19-.05-.29-.32-.11L7.9 14.38l-2.57-.8c-.56-.17-.57-.56.12-.83l10.04-3.87c.46-.17.87.11.72.82z"/></svg>
+                            TG ga yuborish
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading -->
+            <div class="image-loading" id="image-loading" style="display:none">
+                <div class="loading-orb"></div>
+                <p>Rasm yaratilmoqda... <br><small>~15-30 soniya</small></p>
+            </div>
+
+            <!-- Xato -->
+            <div class="image-error" id="image-error" style="display:none"></div>
+        </div>
+    </main>
+
+    <!-- ===== VISION TAB ===== -->
+    <main class="tab-content" id="content-vision">
+        <div class="vision-container">
+            <div class="image-gen-header">
+                <div class="image-gen-icon">👁</div>
+                <h2>Rasm Tahlili</h2>
+                <p>Rasm yuborsin — AI tushuntiradi</p>
+            </div>
+
+            <!-- Rasm tanlash -->
+            <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+                <input type="file" id="file-input" accept="image/*" style="display:none" onchange="previewImage(event)">
+                <div class="upload-placeholder" id="upload-placeholder">
+                    <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <p>Rasm yuklash uchun bosing</p>
+                    <small>JPG, PNG, WEBP</small>
+                </div>
+                <img id="preview-img" style="display:none;width:100%;border-radius:16px;max-height:260px;object-fit:cover" alt="preview">
+            </div>
+
+            <!-- Savol -->
+            <div class="vision-question">
+                <input type="text" id="vision-question" placeholder="Bu rasmda nima bor? (ixtiyoriy)">
+            </div>
+
+            <button id="analyze-btn" onclick="analyzeImage()" style="display:none">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                Tahlil qilish
+            </button>
+
+            <!-- Vision natija -->
+            <div class="vision-result" id="vision-result" style="display:none">
+                <div class="vision-result-header">
+                    <span>🤖 AI tahlili</span>
+                </div>
+                <p id="vision-text"></p>
+            </div>
+
+            <div class="image-loading" id="vision-loading" style="display:none">
+                <div class="loading-orb"></div>
+                <p>Rasm tahlil qilinmoqda...</p>
+            </div>
+        </div>
+    </main>
+
+</div>
+<script src="app.js"></script>
+</body>
+</html>
